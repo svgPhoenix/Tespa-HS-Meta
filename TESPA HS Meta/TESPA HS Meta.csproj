@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\HearthDb\HearthDb\HearthDb.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="credentials.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
