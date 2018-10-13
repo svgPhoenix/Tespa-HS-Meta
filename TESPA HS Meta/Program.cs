@@ -10,13 +10,6 @@ using Google.Apis.Util.Store;
 using System.Threading;
 
 
-/*Console.WriteLine("\n\nDeck not recognized: ");
-                                cardsAsCards = deck.GetCards();
-                                foreach (HearthDb.Card card in cardsAsCards.Keys)
-                                {
-                                    Console.WriteLine(card.Name + ": " + card.DbfId);
-                                }
-                                */
 namespace TespaMeta
 {
     class Analyzer
@@ -48,13 +41,16 @@ namespace TespaMeta
             dbfIDs.Add("Kangor's Army", 49009);
             dbfIDs.Add("Murloc Warleader", 1063);
             dbfIDs.Add("Warrior Quest", 41427);
+            dbfIDs.Add("Aluneth", 43426);
+            dbfIDs.Add("Book of Specters", 47054);
 
             int decksScanned = 0, invalidDecks = 0;
             int warlockZoo = 0, warlockEven = 0, warlockControl = 0, warlockCube = 0, warlockMechathun = 0, warlockOther = 0,
                 druidToken = 0, druidMalygos = 0, druidTogwaggle = 0, druidQuest = 0, druidTaunt = 0, druidMechathun = 0, druidSpiteful = 0, druidOther = 0,
                 paladinOdd = 0, paladinEven = 0, paladinOther = 0, paladinOTK = 0, paladinMech = 0, paladinMurloc = 0,
                 rogueOdd = 0, rogueOther = 0, rogueQuest = 0, rogueMaly = 0, rogueKingsbane = 0, rogueDeathrattle = 0, rogueThief = 0, roguePogo = 0, rogueAggro = 0,
-                warriorOdd = 0, warriorOddQuest = 0, warriorQuest = 0, warriorMechathun = 0, warriorOther = 0;
+                warriorOdd = 0, warriorOddQuest = 0, warriorQuest = 0, warriorMechathun = 0, warriorOther = 0,
+                mageTempo = 0, mageHand = 0, mageOther = 0;
 
             DeckstringReader reader = new DeckstringReader();
 
@@ -166,6 +162,23 @@ namespace TespaMeta
                                 warriorOther++;
                             }
 
+                        }
+                        else if (deck.GetHero().Class.ToString() == "MAGE")
+                        {
+                            if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Aluneth")))
+                                mageTempo++;
+                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Book of Specters")))
+                                mageHand++;
+                            else
+                            {
+                                mageOther++;
+                                Console.WriteLine("\n\nDeck not recognized: ");
+                                cardsAsCards = deck.GetCards();
+                                foreach (HearthDb.Card card in cardsAsCards.Keys)
+                                {
+                                    Console.WriteLine(card.Name + ": " + card.DbfId);
+                                }
+                            }
                         }
                     }
                     catch (ArgumentException)
