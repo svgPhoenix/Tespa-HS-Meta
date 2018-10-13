@@ -116,16 +116,16 @@ namespace TespaMeta
                         }
                         else if (deck.GetHero().Class.ToString() == "WARLOCK")
                         {
-                            if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Mecha'thun")))
-                                warlockMechathun++;
+                            if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Genn Greymane")))
+                                warlockEven++;
                             else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Flame Imp")))
                                 warlockZoo++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Genn Greymane")))
-                                warlockEven++;
                             else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Carnivorous Cube")))
                                 warlockCube++;
                             else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Voidlord")))
                                 warlockControl++;
+                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Mecha'thun")))
+                                warlockMechathun++;
                             else
                             {
                                 warlockOther++;
@@ -135,10 +135,10 @@ namespace TespaMeta
                         {
                             if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Baku")))
                                 paladinOdd++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Genn Greymane")))
-                                paladinEven++;
                             else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Zola")))
                                 paladinOTK++;
+                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Genn Greymane")))
+                                paladinEven++;
                             else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Kangor's Army")))
                                 paladinMech++;
                             else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Murloc Warleader")))
