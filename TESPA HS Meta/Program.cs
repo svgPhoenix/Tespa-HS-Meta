@@ -34,7 +34,7 @@ namespace TespaMeta
             dbfIDs.Add("Pogo-Hopper", 48471);
             dbfIDs.Add("Leeroy Jenkins", 559);
             dbfIDs.Add("Genn Greymane", 47693);
-            dbfIDs.Add("Flame Imp", 1090);
+            dbfIDs.Add("Soul Infusion", 48211);
             dbfIDs.Add("Carnivorous Cube", 45195);
             dbfIDs.Add("Voidlord", 46056);
             dbfIDs.Add("Zola", 46403);
@@ -43,6 +43,8 @@ namespace TespaMeta
             dbfIDs.Add("Warrior Quest", 41427);
             dbfIDs.Add("Aluneth", 43426);
             dbfIDs.Add("Book of Specters", 47054);
+            dbfIDs.Add("Dragoncaller Alanna", 46499);
+            dbfIDs.Add("Archmage Antonidas", 1080);
 
             int decksScanned = 0, invalidDecks = 0;
             int warlockZoo = 0, warlockEven = 0, warlockControl = 0, warlockCube = 0, warlockMechathun = 0, warlockOther = 0,
@@ -50,13 +52,13 @@ namespace TespaMeta
                 paladinOdd = 0, paladinEven = 0, paladinOther = 0, paladinOTK = 0, paladinMech = 0, paladinMurloc = 0,
                 rogueOdd = 0, rogueOther = 0, rogueQuest = 0, rogueMaly = 0, rogueKingsbane = 0, rogueDeathrattle = 0, rogueThief = 0, roguePogo = 0, rogueAggro = 0,
                 warriorOdd = 0, warriorOddQuest = 0, warriorQuest = 0, warriorMechathun = 0, warriorOther = 0,
-                mageTempo = 0, mageHand = 0, mageOther = 0;
+                mageTempo = 0, mageHand = 0, mageBigSpell = 0, mageExodia = 0, mageOther = 0;
 
             DeckstringReader reader = new DeckstringReader();
-
             HearthDb.Deckstrings.Deck deck;
             Dictionary<int, int> cardDBFIDs;
             Dictionary<HearthDb.Card, int> cardsAsCards;
+            string toPrint = "";
             foreach (string deckCode in reader)
             {
                 if (deckCode.Length > 1)
@@ -114,7 +116,7 @@ namespace TespaMeta
                         {
                             if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Genn Greymane")))
                                 warlockEven++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Flame Imp")))
+                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Soul Infusion")))
                                 warlockZoo++;
                             else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Carnivorous Cube")))
                                 warlockCube++;
@@ -169,14 +171,18 @@ namespace TespaMeta
                                 mageTempo++;
                             else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Book of Specters")))
                                 mageHand++;
+                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Dragoncaller Alanna")))
+                                mageBigSpell++;
+                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Archmage Antonidas")))
+                                mageExodia++;
                             else
                             {
                                 mageOther++;
-                                Console.WriteLine("\n\nDeck not recognized: ");
+                                toPrint += "\n\nDeck not recognized: ";
                                 cardsAsCards = deck.GetCards();
                                 foreach (HearthDb.Card card in cardsAsCards.Keys)
                                 {
-                                    Console.WriteLine(card.Name + ": " + card.DbfId);
+                                    toPrint += "\n" + card.Name + ": " + card.DbfId;
                                 }
                             }
                         }
@@ -188,7 +194,7 @@ namespace TespaMeta
                 }
             }
 
-            Console.WriteLine("\n\nMeta Analysis Done. Unrecognized Decks Above. Press ENTER to continue to overview.");
+            Console.WriteLine(toPrint + "\n\nMeta Analysis Done. Unrecognized Decks Above. Press ENTER to continue to overview.");
             Console.ReadLine();
 
             Console.Clear();
@@ -216,25 +222,27 @@ namespace TespaMeta
                 "\n Other Rogues: \t\t" + rogueOther);
             //Warlock Data
             Console.WriteLine("\n\nWarlock Archetypes: " +
-                "\n Zoo Warlocks: \t\t" + warlockZoo + 
-                "\n Even Warlocks: \t" + warlockEven + 
-                "\n Control Warlocks: \t" + warlockControl + 
+                "\n Zoo Warlocks: \t\t" + warlockZoo +
+                "\n Even Warlocks: \t" + warlockEven +
+                "\n Control Warlocks: \t" + warlockControl +
                 "\n Cube Warlocks: \t" + warlockCube +
                 "\n Mecha'thun Warlocks: \t" + warlockMechathun +
                 "\n Other Warlocks: \t" + warlockOther);
             Console.WriteLine("\n\nPaladin Archetypes: " +
-                "\n Odd Paladin: \t\t" + paladinOdd + 
-                "\n Even Paladin: \t\t" + paladinEven + 
-                "\n OTK Paladin: \t\t" + paladinOTK + 
-                "\n Mech Paladin: \t\t" + paladinMech + 
+                "\n Odd Paladin: \t\t" + paladinOdd +
+                "\n Even Paladin: \t\t" + paladinEven +
+                "\n OTK Paladin: \t\t" + paladinOTK +
+                "\n Mech Paladin: \t\t" + paladinMech +
                 "\n Murloc Paladin: \t" + paladinMurloc +
                 "\n Other Paladin: \t" + paladinOther);
             Console.WriteLine("\n\nWarrior Archetypes: " +
-                "\n Odd Warriors: \t\t" + warriorOdd + 
-                "\n Odd Quest Warriors: \t" + warriorOddQuest + 
-                "\n Quest Warriors: \t" + warriorQuest + 
-                "\n Mecha'thun Warriors: \t" + warriorMechathun + 
+                "\n Odd Warriors: \t\t" + warriorOdd +
+                "\n Odd Quest Warriors: \t" + warriorOddQuest +
+                "\n Quest Warriors: \t" + warriorQuest +
+                "\n Mecha'thun Warriors: \t" + warriorMechathun +
                 "\n Other Warriors: \t" + warriorOther);
+            Console.WriteLine("\n\nMage Archetypes: " +
+                "\nOther Mages: " + mageOther);
             Console.ReadLine();
         }
     }
@@ -245,9 +253,10 @@ namespace TespaMeta
     /// </summary>
     class DeckstringReader : IEnumerable
     {
-        static string[] Scopes = { SheetsService.Scope.SpreadsheetsReadonly };
-        static string ApplicationName = "TESPA HS Meta";
+        private static readonly string[] Scopes = { SheetsService.Scope.SpreadsheetsReadonly };
+        private static readonly string ApplicationName = "TESPA HS Meta";
         UserCredential credential;
+        private int NUM_SHEETS = 2; //number of sheets in the target document (number of weeks of the tournament)
 
         public IEnumerator GetEnumerator()
         {
@@ -273,27 +282,39 @@ namespace TespaMeta
             });
 
             // Define request parameters.
-            SpreadsheetsResource.ValuesResource.GetRequest request =
-                    service.Spreadsheets.Values.Get(
-                        "1-0fhWItkpb_bG5y0ZHnao-EuFYa7tbFqKM6MOts1IT8", //the ID of the spreadsheet
-                        "A:D"); //the range of cells we want from the spreadsheet
+            string sheetID = "1-0fhWItkpb_bG5y0ZHnao-EuFYa7tbFqKM6MOts1IT8";
 
-
-            ValueRange response = request.Execute();
-            IList<IList<Object>> values = response.Values;
-            if (values != null && values.Count > 0)
+            for (int sheet = 1; sheet <= NUM_SHEETS; sheet--)
             {
-                foreach (var row in values)
+                //query Google Sheets for the deckstrings
+                string range = "Sheet" + sheet + "!C:F";
+                SpreadsheetsResource.ValuesResource.GetRequest request =
+                        service.Spreadsheets.Values.Get(sheetID, range);
+                ValueRange response = request.Execute();
+                IList<IList<Object>> deckStrings = response.Values;
+
+                //query Google Sheets for the team names
+                /* 
+                range = "Sheet" + sheet + "!A:A";
+                request = service.Spreadsheets.Values.Get(sheetID, range);
+                response = request.Execute();
+                IList<IList<Object>> teamNames = response.Values;
+                */
+
+                if (deckStrings != null && deckStrings.Count > 0)
                 {
-                    foreach (var cell in row)
+                    foreach (var row in deckStrings)
                     {
-                        yield return cell;
+                        foreach (var cell in row)
+                        {
+                            yield return cell;
+                        }
                     }
                 }
-            }
-            else
-            {
-                Console.WriteLine("No data found.");
+                else
+                {
+                    Console.WriteLine("No data found.");
+                }
             }
         }
     }
