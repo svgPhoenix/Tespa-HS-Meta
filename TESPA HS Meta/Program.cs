@@ -14,7 +14,53 @@ namespace TespaMeta
 {
     class Analyzer
     {
+        static void printOptions()
+        {
+            Console.Out.WriteLine(
+                            "Type the number that corresponds with the menu item:\n" +
+                            "1: Deserialize a single code\n" +
+                            "2: Analyze the meta of the entire tournament\n" +
+                            "3: Analyze a specific opponent's lineup over all previous weeks (unimplemented)");
+            switch (Convert.ToChar(Console.Read()))
+            {
+                case '1':
+                    DeserializeSingleDeck();
+                    break;
+                case '2':
+                    SummarizeMeta();
+                    break;
+                case '3':
+                    PreviewOpponent();
+                    break;
+                default:
+                    Console.WriteLine("Please only type a number from the list.");
+                    printOptions();
+                    break;
+
+            }
+        }
+
         static void Main(string[] args)
+        {
+            Console.Clear();
+            printOptions();
+
+            
+        }
+
+        private static void DeserializeSingleDeck()
+        {
+            HearthDb.Deckstrings.Deck deck;
+
+            Console.WriteLine("Paste a deckstring and press Enter.");
+            string deckstring = Console.ReadLine();
+            deckstring.Trim(); //remove whitespace because it fucks with base64 deserializing
+            //deserialize the deck
+            deck = HearthDb.Deckstrings.DeckSerializer.Deserialize(deckstring);
+            Console.WriteLine(deck.ToString());
+        }
+
+        private static void SummarizeMeta()
         {
             //these are the cards that are used to identify archetypes.
             Dictionary<string, int> dbfIDs = new Dictionary<string, int>();
@@ -52,7 +98,8 @@ namespace TespaMeta
                 paladinOdd = 0, paladinEven = 0, paladinOther = 0, paladinOTK = 0, paladinMech = 0, paladinMurloc = 0,
                 rogueOdd = 0, rogueOther = 0, rogueQuest = 0, rogueMaly = 0, rogueKingsbane = 0, rogueDeathrattle = 0, rogueThief = 0, roguePogo = 0, rogueAggro = 0,
                 warriorOdd = 0, warriorOddQuest = 0, warriorQuest = 0, warriorMechathun = 0, warriorOther = 0,
-                mageTempo = 0, mageHand = 0, mageBigSpell = 0, mageExodia = 0, mageOther = 0;
+                mageTempo = 0, mageHand = 0, mageBigSpell = 0, mageExodia = 0, mageOther = 0,
+                priestZerek = 0, priestOther = 0;
 
             DeckstringReader reader = new DeckstringReader();
             HearthDb.Deckstrings.Deck deck;
@@ -178,6 +225,15 @@ namespace TespaMeta
                             else
                             {
                                 mageOther++;
+                            }
+                        }
+                        else if (deck.GetHero().Class.ToString() == "PRIEST")
+                        {
+                            if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Zerek's Cloning Gallery")))
+                                priestZerek++;
+                            else
+                            {
+                                priestOther++;
                                 toPrint += "\n\nDeck not recognized: ";
                                 cardsAsCards = deck.GetCards();
                                 foreach (HearthDb.Card card in cardsAsCards.Keys)
@@ -244,6 +300,11 @@ namespace TespaMeta
             Console.WriteLine("\n\nMage Archetypes: " +
                 "\nOther Mages: " + mageOther);
             Console.ReadLine();
+        }
+
+        private static void PreviewOpponent()
+        {
+            throw new NotImplementedException();
         }
     }
 
