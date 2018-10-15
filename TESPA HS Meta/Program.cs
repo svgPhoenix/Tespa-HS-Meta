@@ -46,8 +46,6 @@ namespace TespaMeta
         {
             Console.Clear();
             printOptions();
-
-            
         }
 
         private static void DeserializeSingleDeck()
@@ -61,6 +59,7 @@ namespace TespaMeta
             deck = HearthDb.Deckstrings.DeckSerializer.Deserialize(deckstring);
             cards = deck.GetCards();
             string toPrint = "#Deck Format: " + deck.Format;
+            toPrint += "\n#Format Year: " + deck.Format;
             foreach(HearthDb.Card card in cards.Keys)
             {
                 toPrint += "\n" + card.Name + ": " + card.DbfId;
@@ -100,6 +99,9 @@ namespace TespaMeta
             dbfIDs.Add("Book of Specters", 47054);
             dbfIDs.Add("Dragoncaller Alanna", 46499);
             dbfIDs.Add("Archmage Antonidas", 1080);
+            dbfIDs.Add("Alexstraza", 581);
+            dbfIDs.Add("Zerek's Cloning Gallery", 49421);
+            dbfIDs.Add("Divine Spirit", 1361);
 
             int decksScanned = 0, invalidDecks = 0;
             int warlockZoo = 0, warlockEven = 0, warlockControl = 0, warlockCube = 0, warlockMechathun = 0, warlockOther = 0,
@@ -108,7 +110,7 @@ namespace TespaMeta
                 rogueOdd = 0, rogueOther = 0, rogueQuest = 0, rogueMaly = 0, rogueKingsbane = 0, rogueDeathrattle = 0, rogueThief = 0, roguePogo = 0, rogueAggro = 0,
                 warriorOdd = 0, warriorOddQuest = 0, warriorQuest = 0, warriorMechathun = 0, warriorOther = 0,
                 mageTempo = 0, mageHand = 0, mageBigSpell = 0, mageExodia = 0, mageOther = 0,
-                priestZerek = 0, priestOther = 0;
+                priestRez = 0, priestControl = 0, priestDivineSpirit = 0, priestMechathun = 0, priestOther = 0;
 
             DeckstringReader reader = new DeckstringReader();
             HearthDb.Deckstrings.Deck deck;
@@ -239,7 +241,13 @@ namespace TespaMeta
                         else if (deck.GetHero().Class.ToString() == "PRIEST")
                         {
                             if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Zerek's Cloning Gallery")))
-                                priestZerek++;
+                                priestRez++;
+                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Alexstraza")))
+                                priestControl++;
+                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Divine Spirit")))
+                                priestDivineSpirit++;
+                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Mecha'thun")))
+                                priestMechathun++;
                             else
                             {
                                 priestOther++;
@@ -307,7 +315,17 @@ namespace TespaMeta
                 "\n Mecha'thun Warriors: \t" + warriorMechathun +
                 "\n Other Warriors: \t" + warriorOther);
             Console.WriteLine("\n\nMage Archetypes: " +
-                "\nOther Mages: " + mageOther);
+                "\nTempo Mages: \t" + mageTempo + 
+                "\nBig Spell Mages: \t\t" + mageBigSpell +
+                "\nExodia Mages: \t\t" + mageExodia +
+                "\nHand Mages: \t\t" + mageHand +
+                "\nOther Mages: \t\t" + mageOther);
+            Console.WriteLine("\n\nPriest Archetypes: " +
+                "\nControl Priests: \t" + priestControl + 
+                "\nRez Priests: \t\t" + priestRez +
+                "\nDS Priests: \t\t" + priestDivineSpirit +
+                "\nMecha'thun Priests: \t" + priestMechathun +
+                "\nOther Priests: \t" + priestOther);
             Console.ReadLine();
         }
 
@@ -354,7 +372,7 @@ namespace TespaMeta
             // Define request parameters.
             string sheetID = "1-0fhWItkpb_bG5y0ZHnao-EuFYa7tbFqKM6MOts1IT8";
 
-            for (int sheet = 1; sheet <= NUM_SHEETS; sheet--)
+            for (int sheet = 1; sheet <= NUM_SHEETS; sheet++)
             {
                 //query Google Sheets for the deckstrings
                 string range = "Sheet" + sheet + "!C:F";
