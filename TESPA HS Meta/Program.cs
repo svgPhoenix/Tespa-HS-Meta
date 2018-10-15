@@ -21,7 +21,9 @@ namespace TespaMeta
                             "1: Deserialize a single code\n" +
                             "2: Analyze the meta of the entire tournament\n" +
                             "3: Analyze a specific opponent's lineup over all previous weeks (unimplemented)");
-            switch (Convert.ToChar(Console.Read()))
+            char input = Convert.ToChar(Console.Read());
+            Console.ReadLine();
+            switch (input)
             {
                 case '1':
                     DeserializeSingleDeck();
@@ -51,13 +53,20 @@ namespace TespaMeta
         private static void DeserializeSingleDeck()
         {
             HearthDb.Deckstrings.Deck deck;
+            Dictionary<HearthDb.Card, int> cards;
 
             Console.WriteLine("Paste a deckstring and press Enter.");
             string deckstring = Console.ReadLine();
-            deckstring.Trim(); //remove whitespace because it fucks with base64 deserializing
             //deserialize the deck
             deck = HearthDb.Deckstrings.DeckSerializer.Deserialize(deckstring);
-            Console.WriteLine(deck.ToString());
+            cards = deck.GetCards();
+            string toPrint = "#Deck Format: " + deck.Format;
+            foreach(HearthDb.Card card in cards.Keys)
+            {
+                toPrint += "\n" + card.Name + ": " + card.DbfId;
+            }
+            Console.WriteLine(toPrint);
+            Console.ReadLine();
         }
 
         private static void SummarizeMeta()
