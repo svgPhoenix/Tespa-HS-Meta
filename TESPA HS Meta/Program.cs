@@ -60,7 +60,7 @@ namespace TespaMeta
             cards = deck.GetCards();
             string toPrint = "#Deck Format: " + deck.Format;
             toPrint += "\n#Format Year: " + deck.Format;
-            foreach(HearthDb.Card card in cards.Keys)
+            foreach (HearthDb.Card card in cards.Keys)
             {
                 toPrint += "\n" + card.Name + ": " + card.DbfId;
             }
@@ -102,7 +102,10 @@ namespace TespaMeta
                 { "Archmage Antonidas", 1080 },
                 { "Alexstraza", 581 },
                 { "Zerek's Cloning Gallery", 49421 },
-                { "Divine Spirit", 1361 }
+                { "Divine Spirit", 1361 },
+                { "Al'Akir the Windlord", 32},
+                { "The Lich King", 42818},
+                { "Shudderwock", 48111}
             };
 
             int decksScanned = 0, invalidDecks = 0;
@@ -112,7 +115,9 @@ namespace TespaMeta
                 rogueOdd = 0, rogueOther = 0, rogueQuest = 0, rogueMaly = 0, rogueKingsbane = 0, rogueDeathrattle = 0, rogueThief = 0, roguePogo = 0, rogueAggro = 0,
                 warriorOdd = 0, warriorOddQuest = 0, warriorQuest = 0, warriorMechathun = 0, warriorOther = 0,
                 mageTempo = 0, mageHand = 0, mageBigSpell = 0, mageExodia = 0, mageOther = 0,
-                priestRez = 0, priestControl = 0, priestDivineSpirit = 0, priestMechathun = 0, priestOther = 0;
+                priestRez = 0, priestControl = 0, priestDivineSpirit = 0, priestMechathun = 0, priestMechathunQuest = 0, priestOther = 0,
+                shamanEven = 0, shamanOther = 0, shamanMidrange = 0, shamanShudderwok = 0,
+                hunterDeathrattle = 0, hunterSecret = 0, hunterSpell = 0, hunterOther = 0;
 
             DeckstringReader reader = new DeckstringReader();
             HearthDb.Deckstrings.Deck deck;
@@ -247,12 +252,39 @@ namespace TespaMeta
                             else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Alexstraza")))
                                 priestControl++;
                             else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Mecha'thun")))
-                                priestMechathun++;
+                            {
+                                if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Priest Quest")))
+                                    priestMechathunQuest++;
+                                else
+                                    priestMechathun++;
+                            }
                             else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Divine Spirit")))
                                 priestDivineSpirit++;
                             else
                             {
                                 priestOther++;
+                            }
+                        }
+                        else if (deck.GetHero().Class.ToString() == "SHAMAN")
+                        {
+                            if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Genn Greymane")))
+                                shamanEven++;
+                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Al'Akir the Windlord")) || cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("The Lich King")))
+                                shamanMidrange++;
+                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Shudderwock")))
+                                shamanShudderwok++;
+                            else
+                            {
+                                shamanOther++;
+                            }
+                        }
+                        else if (deck.GetHero().Class.ToString() == "HUNTER")
+                        {
+                            if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Devilsaur Egg")))
+                                hunterDeathrattle++;
+                            else
+                            {
+                                hunterOther++;
                                 toPrint += "\n\nDeck not recognized: ";
                                 cardsAsCards = deck.GetCards();
                                 foreach (HearthDb.Card card in cardsAsCards.Keys)
@@ -310,6 +342,7 @@ namespace TespaMeta
                 "\n Cube Warlocks: \t" + warlockCube +
                 "\n Mecha'thun Warlocks: \t" + warlockMechathun +
                 "\n Other Warlocks: \t" + warlockOther + "\n";
+            //Paladin Data
             toPrint += "\n\nPaladin Archetypes: " +
                 "\n Odd Paladin: \t\t" + paladinOdd +
                 "\n Even Paladin: \t\t" + paladinEven +
@@ -317,25 +350,38 @@ namespace TespaMeta
                 "\n Mech Paladin: \t\t" + paladinMech +
                 "\n Murloc Paladin: \t" + paladinMurloc +
                 "\n Other Paladin: \t" + paladinOther + "\n";
+            //Warrior Data
             toPrint += "\n\nWarrior Archetypes: " +
                 "\n Odd Warriors: \t\t" + warriorOdd +
                 "\n Odd Quest Warriors: \t" + warriorOddQuest +
                 "\n Quest Warriors: \t" + warriorQuest +
                 "\n Mecha'thun Warriors: \t" + warriorMechathun +
                 "\n Other Warriors: \t" + warriorOther + "\n";
+            //Mage data
             toPrint += "\n\nMage Archetypes: " +
-                "\nTempo Mages: \t" + mageTempo + 
+                "\nTempo Mages: \t" + mageTempo +
                 "\nBig Spell Mages: \t\t" + mageBigSpell +
                 "\nExodia Mages: \t\t" + mageExodia +
                 "\nHand Mages: \t\t" + mageHand +
                 "\nOther Mages: \t\t" + mageOther + "\n";
+            //Priest Data
             toPrint += "\n\nPriest Archetypes: " +
-                "\nControl Priests: \t" + priestControl + 
+                "\nControl Priests: \t" + priestControl +
                 "\nRez Priests: \t\t" + priestRez +
                 "\nDS Priests: \t\t" + priestDivineSpirit +
                 "\nMecha'thun Priests: \t" + priestMechathun +
+                "\nMecha'thun Quest Priests: \t" + priestMechathunQuest +
                 "\nOther Priests: \t" + priestOther + "\n";
+            //Shaman Data
+            toPrint += "\n\nShaman Archetypes:" +
+                "\nEven Shamans: \t\t" + shamanEven +
+                "\nMidrange Shamans: \t" + shamanMidrange +
+                "\nShudderwok Shaman \t\t" + shamanShudderwok +
+                "\nOther Shamans" + shamanOther + "\n";
+            toPrint += "\nHunter Archetypes: " +
+                "\nOther Hunters: \t\t" + hunterOther + "\n";
             Console.WriteLine(toPrint);
+            toPrint = "";
             Console.ReadLine();
         }
 
@@ -390,7 +436,7 @@ namespace TespaMeta
                         service.Spreadsheets.Values.Get(sheetID, range);
                 ValueRange response = request.Execute();
                 IList<IList<Object>> deckStrings = response.Values;
-                
+
                 if (deckStrings != null && deckStrings.Count > 0)
                 {
                     foreach (var row in deckStrings)
