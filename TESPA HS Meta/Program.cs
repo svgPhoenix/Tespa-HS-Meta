@@ -14,7 +14,7 @@ namespace TespaMeta
 {
     class Analyzer
     {
-        static void printOptions()
+        static void PrintOptions()
         {
             Console.Out.WriteLine(
                             "Type the number that corresponds with the menu item:\n" +
@@ -36,7 +36,7 @@ namespace TespaMeta
                     break;
                 default:
                     Console.WriteLine("Please only type a number from the list.");
-                    printOptions();
+                    PrintOptions();
                     break;
 
             }
@@ -45,7 +45,7 @@ namespace TespaMeta
         static void Main(string[] args)
         {
             Console.Clear();
-            printOptions();
+            PrintOptions();
         }
 
         private static void DeserializeSingleDeck()
@@ -71,37 +71,39 @@ namespace TespaMeta
         private static void SummarizeMeta()
         {
             //these are the cards that are used to identify archetypes.
-            Dictionary<string, int> dbfIDs = new Dictionary<string, int>();
-            dbfIDs.Add("Wispering Woods", 47063);
-            dbfIDs.Add("Baku", 48158);
-            dbfIDs.Add("Malygos", 436);
-            dbfIDs.Add("Druid Quest", 41099);
-            dbfIDs.Add("King Togwaggle", 46589);
-            dbfIDs.Add("Azalina Soulthief", 46874);
-            dbfIDs.Add("Hadronox", 43439);
-            dbfIDs.Add("Mecha'thun", 48625);
-            dbfIDs.Add("Spiteful Summoner", 46551);
-            dbfIDs.Add("Rogue Quest", 41222);
-            dbfIDs.Add("Kingsbane", 47035);
-            dbfIDs.Add("Devilsaur Egg", 41259);
-            dbfIDs.Add("Academic Espionage", 48040);
-            dbfIDs.Add("Pogo-Hopper", 48471);
-            dbfIDs.Add("Leeroy Jenkins", 559);
-            dbfIDs.Add("Genn Greymane", 47693);
-            dbfIDs.Add("Soul Infusion", 48211);
-            dbfIDs.Add("Carnivorous Cube", 45195);
-            dbfIDs.Add("Voidlord", 46056);
-            dbfIDs.Add("Zola", 46403);
-            dbfIDs.Add("Kangor's Army", 49009);
-            dbfIDs.Add("Murloc Warleader", 1063);
-            dbfIDs.Add("Warrior Quest", 41427);
-            dbfIDs.Add("Aluneth", 43426);
-            dbfIDs.Add("Book of Specters", 47054);
-            dbfIDs.Add("Dragoncaller Alanna", 46499);
-            dbfIDs.Add("Archmage Antonidas", 1080);
-            dbfIDs.Add("Alexstraza", 581);
-            dbfIDs.Add("Zerek's Cloning Gallery", 49421);
-            dbfIDs.Add("Divine Spirit", 1361);
+            Dictionary<string, int> dbfIDs = new Dictionary<string, int>
+            {
+                { "Wispering Woods", 47063 },
+                { "Baku", 48158 },
+                { "Malygos", 436 },
+                { "Druid Quest", 41099 },
+                { "King Togwaggle", 46589 },
+                { "Azalina Soulthief", 46874 },
+                { "Hadronox", 43439 },
+                { "Mecha'thun", 48625 },
+                { "Spiteful Summoner", 46551 },
+                { "Rogue Quest", 41222 },
+                { "Kingsbane", 47035 },
+                { "Devilsaur Egg", 41259 },
+                { "Academic Espionage", 48040 },
+                { "Pogo-Hopper", 48471 },
+                { "Leeroy Jenkins", 559 },
+                { "Genn Greymane", 47693 },
+                { "Soul Infusion", 48211 },
+                { "Carnivorous Cube", 45195 },
+                { "Voidlord", 46056 },
+                { "Zola", 46403 },
+                { "Kangor's Army", 49009 },
+                { "Murloc Warleader", 1063 },
+                { "Warrior Quest", 41427 },
+                { "Aluneth", 43426 },
+                { "Book of Specters", 47054 },
+                { "Dragoncaller Alanna", 46499 },
+                { "Archmage Antonidas", 1080 },
+                { "Alexstraza", 581 },
+                { "Zerek's Cloning Gallery", 49421 },
+                { "Divine Spirit", 1361 }
+            };
 
             int decksScanned = 0, invalidDecks = 0;
             int warlockZoo = 0, warlockEven = 0, warlockControl = 0, warlockCube = 0, warlockMechathun = 0, warlockOther = 0,
@@ -244,10 +246,10 @@ namespace TespaMeta
                                 priestRez++;
                             else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Alexstraza")))
                                 priestControl++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Divine Spirit")))
-                                priestDivineSpirit++;
                             else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Mecha'thun")))
                                 priestMechathun++;
+                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Divine Spirit")))
+                                priestDivineSpirit++;
                             else
                             {
                                 priestOther++;
@@ -268,12 +270,13 @@ namespace TespaMeta
             }
 
             Console.WriteLine(toPrint + "\n\nMeta Analysis Done. Unrecognized Decks Above. Press ENTER to continue to overview.");
+            toPrint = "";
             Console.ReadLine();
 
             Console.Clear();
-            Console.WriteLine("Invalid Decks: " + invalidDecks);
+            toPrint += "Invalid Decks: " + invalidDecks + "\n";
             //Druid data
-            Console.WriteLine("\nDruid Archetypes: " +
+            toPrint += "\nDruid Archetypes: " +
                 "\n Token Druids: \t\t" + druidToken +
                 "\n Malygos Druids: \t" + druidMalygos +
                 "\n Togwaggle Druids: \t" + druidTogwaggle +
@@ -281,9 +284,9 @@ namespace TespaMeta
                 "\n Mecha'thun Druids: \t" + druidMechathun +
                 "\n Spiteful Druids: \t" + druidSpiteful +
                 "\n Quest Druids: \t\t" + druidQuest +
-                "\n Other Druids: \t\t" + druidOther);
+                "\n Other Druids: \t\t" + druidOther + "\n";
             //Rogue data
-            Console.WriteLine("\n\nRogue Archetypes: " +
+            toPrint += "\n\nRogue Archetypes: " +
                 "\n Odd Rogues: \t\t" + rogueOdd +
                 "\n Quest Rogue: \t\t" + rogueQuest +
                 "\n Kingsbane Rogues: \t" + rogueKingsbane +
@@ -292,40 +295,41 @@ namespace TespaMeta
                 "\n Deathrattle Rogues: \t" + rogueDeathrattle +
                 "\n Aggro Rogues: \t\t" + rogueAggro +
                 "\n Pogo-Hopper Rogues: \t" + roguePogo +
-                "\n Other Rogues: \t\t" + rogueOther);
+                "\n Other Rogues: \t\t" + rogueOther + "\n";
             //Warlock Data
-            Console.WriteLine("\n\nWarlock Archetypes: " +
+            toPrint += "\n\nWarlock Archetypes: " +
                 "\n Zoo Warlocks: \t\t" + warlockZoo +
                 "\n Even Warlocks: \t" + warlockEven +
                 "\n Control Warlocks: \t" + warlockControl +
                 "\n Cube Warlocks: \t" + warlockCube +
                 "\n Mecha'thun Warlocks: \t" + warlockMechathun +
-                "\n Other Warlocks: \t" + warlockOther);
-            Console.WriteLine("\n\nPaladin Archetypes: " +
+                "\n Other Warlocks: \t" + warlockOther + "\n";
+            toPrint += "\n\nPaladin Archetypes: " +
                 "\n Odd Paladin: \t\t" + paladinOdd +
                 "\n Even Paladin: \t\t" + paladinEven +
                 "\n OTK Paladin: \t\t" + paladinOTK +
                 "\n Mech Paladin: \t\t" + paladinMech +
                 "\n Murloc Paladin: \t" + paladinMurloc +
-                "\n Other Paladin: \t" + paladinOther);
-            Console.WriteLine("\n\nWarrior Archetypes: " +
+                "\n Other Paladin: \t" + paladinOther + "\n";
+            toPrint += "\n\nWarrior Archetypes: " +
                 "\n Odd Warriors: \t\t" + warriorOdd +
                 "\n Odd Quest Warriors: \t" + warriorOddQuest +
                 "\n Quest Warriors: \t" + warriorQuest +
                 "\n Mecha'thun Warriors: \t" + warriorMechathun +
-                "\n Other Warriors: \t" + warriorOther);
-            Console.WriteLine("\n\nMage Archetypes: " +
+                "\n Other Warriors: \t" + warriorOther + "\n";
+            toPrint += "\n\nMage Archetypes: " +
                 "\nTempo Mages: \t" + mageTempo + 
                 "\nBig Spell Mages: \t\t" + mageBigSpell +
                 "\nExodia Mages: \t\t" + mageExodia +
                 "\nHand Mages: \t\t" + mageHand +
-                "\nOther Mages: \t\t" + mageOther);
-            Console.WriteLine("\n\nPriest Archetypes: " +
+                "\nOther Mages: \t\t" + mageOther + "\n";
+            toPrint += "\n\nPriest Archetypes: " +
                 "\nControl Priests: \t" + priestControl + 
                 "\nRez Priests: \t\t" + priestRez +
                 "\nDS Priests: \t\t" + priestDivineSpirit +
                 "\nMecha'thun Priests: \t" + priestMechathun +
-                "\nOther Priests: \t" + priestOther);
+                "\nOther Priests: \t" + priestOther + "\n";
+            Console.WriteLine(toPrint);
             Console.ReadLine();
         }
 
@@ -344,7 +348,7 @@ namespace TespaMeta
         private static readonly string[] Scopes = { SheetsService.Scope.SpreadsheetsReadonly };
         private static readonly string ApplicationName = "TESPA HS Meta";
         UserCredential credential;
-        private int NUM_SHEETS = 2; //number of sheets in the target document (number of weeks of the tournament)
+        private readonly int NUM_SHEETS = 3; //number of sheets in the target document (number of weeks of the tournament)
 
         public IEnumerator GetEnumerator()
         {
@@ -380,15 +384,7 @@ namespace TespaMeta
                         service.Spreadsheets.Values.Get(sheetID, range);
                 ValueRange response = request.Execute();
                 IList<IList<Object>> deckStrings = response.Values;
-
-                //query Google Sheets for the team names
-                /* 
-                range = "Sheet" + sheet + "!A:A";
-                request = service.Spreadsheets.Values.Get(sheetID, range);
-                response = request.Execute();
-                IList<IList<Object>> teamNames = response.Values;
-                */
-
+                
                 if (deckStrings != null && deckStrings.Count > 0)
                 {
                     foreach (var row in deckStrings)
@@ -404,6 +400,10 @@ namespace TespaMeta
                     Console.WriteLine("No data found.");
                 }
             }
+
+            //nullify some vars to maybe save memory while reading unrecognized deck codes
+            service = null;
+            credential = null;
         }
     }
 
