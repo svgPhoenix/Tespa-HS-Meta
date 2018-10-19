@@ -268,6 +268,12 @@ namespace TespaMeta
                     }
                 }
             }
+            //nullify vars after use to save some memory
+            dbfIDs = null;
+            reader = null;
+            deck = null;
+            cardDBFIDs = null;
+            cardsAsCards = null;
 
             Console.WriteLine(toPrint + "\n\nMeta Analysis Done. Unrecognized Decks Above. Press ENTER to continue to overview.");
             toPrint = "";
