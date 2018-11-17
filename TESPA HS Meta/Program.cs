@@ -500,7 +500,6 @@ namespace TespaMeta
         private static readonly string[] Scopes = { SheetsService.Scope.SpreadsheetsReadonly };
         private static readonly string ApplicationName = "TESPA HS Meta";
         UserCredential credential;
-        private static readonly string apiKey = "AIzaSyDZJ-wj4a5f2bK3kSKLaPe8ceAxeCkcldw";
 
         public IEnumerator GetEnumerator()
         {
