@@ -2,7 +2,7 @@
 
 TESPA-HS-META performs some automated analytics for a Hearthstone tournament.\
 It reads a Google Sheets doc for team names, colleges, and deck codes.
-[you can read about deck codes here](https://hearthsim.info/docs/deckstrings/)
+[You can read about deck codes here](https://hearthsim.info/docs/deckstrings/)
 
 ## Pre-Requisites (dev only)
 This is a Microsoft Visual Studio Project and will work best with Visual Studio on Windows. If you know what you're doing, feel free to edit using something else.
