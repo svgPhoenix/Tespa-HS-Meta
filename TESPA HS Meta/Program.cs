@@ -14,13 +14,21 @@ namespace TespaMeta
 {
     class Analyzer
     {
+        static readonly int NUM_SHEETS = 4;
+
+        static void Main(string[] args)
+        {
+            Console.Clear();
+            PrintOptions();
+        }
+
         static void PrintOptions()
         {
             Console.Out.WriteLine(
                             "Type the number that corresponds with the menu item:\n" +
                             "1: Deserialize a single code\n" +
                             "2: Analyze the meta of the entire tournament\n" +
-                            "3: Analyze a specific opponent's lineup over all previous weeks (unimplemented)");
+                            "3: Analyze a specific opponent's lineup over all previous weeks");
             char input = Convert.ToChar(Console.Read());
             Console.ReadLine();
             switch (input)
@@ -40,12 +48,6 @@ namespace TespaMeta
                     break;
 
             }
-        }
-
-        static void Main(string[] args)
-        {
-            Console.Clear();
-            PrintOptions();
         }
 
         private static void DeserializeSingleDeck()
@@ -110,8 +112,9 @@ namespace TespaMeta
                 { "Subject 9", 49447}
             };
 
-            int decksScanned = 0, invalidDecks = 0;
-            int warlockZoo = 0, warlockEven = 0, warlockControl = 0, warlockCube = 0, warlockMechathun = 0, warlockOther = 0,
+            int decksScanned = 0, invalidDecks = 0,
+                //counter vars for all the different deck archetypes tracked
+                warlockZoo = 0, warlockEven = 0, warlockControl = 0, warlockCube = 0, warlockMechathun = 0, warlockOther = 0,
                 druidToken = 0, druidMalygos = 0, druidTogwaggle = 0, druidQuest = 0, druidTaunt = 0, druidMechathun = 0, druidSpiteful = 0, druidOther = 0,
                 paladinOdd = 0, paladinEven = 0, paladinOther = 0, paladinOTK = 0, paladinMech = 0, paladinMurloc = 0,
                 rogueOdd = 0, rogueOther = 0, rogueQuest = 0, rogueMaly = 0, rogueKingsbane = 0, rogueDeathrattle = 0, rogueThief = 0, roguePogo = 0, rogueAggro = 0,
@@ -121,192 +124,191 @@ namespace TespaMeta
                 shamanEven = 0, shamanOther = 0, shamanMidrange = 0, shamanShudderwok = 0,
                 hunterDeathrattle = 0, hunterSecret = 0, hunterSpell = 0, hunterOther = 0;
 
-            DeckstringReader reader = new DeckstringReader();
             HearthDb.Deckstrings.Deck deck;
             Dictionary<int, int> cardDBFIDs;
             string toPrint = "";
-            foreach (string deckCode in reader)
+            for (int i = 1; i <= NUM_SHEETS; i++)
             {
-                if (deckCode.Length > 1)
+                GoogleSheetReader reader = new GoogleSheetReader("Sheet" + i + "!C:F");
+                foreach (string deckCode in reader)
                 {
-                    decksScanned++;
-                    try
+                    if (deckCode.Length > 1)
                     {
-                        deck = HearthDb.Deckstrings.DeckSerializer.Deserialize(deckCode);
-                        cardDBFIDs = deck.CardDbfIds;
-                        if (deck.GetHero().Class.ToString() == "HUNTER")
+                        decksScanned++;
+                        try
                         {
-                            if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Devilsaur Egg")))
-                                hunterDeathrattle++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Subject 9")))
-                                hunterSecret++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Rhok'delar")))
-                                hunterSecret++;
-                            else
+                            deck = HearthDb.Deckstrings.DeckSerializer.Deserialize(deckCode);
+                            cardDBFIDs = deck.CardDbfIds;
+                            if (deck.GetHero().Class.ToString() == "HUNTER")
                             {
-                                hunterOther++;
-                            }
-                        }
-                        else if (deck.GetHero().Class.ToString() == "WARLOCK")
-                        {
-                            if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Genn Greymane")))
-                                warlockEven++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Soul Infusion")))
-                                warlockZoo++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Carnivorous Cube")))
-                                warlockCube++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Voidlord")))
-                                warlockControl++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Mecha'thun")))
-                                warlockMechathun++;
-                            else
-                            {
-                                warlockOther++;
-                            }
-                        }
-                        else if (deck.GetHero().Class.ToString() == "MAGE")
-                        {
-                            if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Aluneth")))
-                                mageTempo++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Book of Specters")))
-                                mageHand++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Dragoncaller Alanna")))
-                                mageBigSpell++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Archmage Antonidas")))
-                                mageExodia++;
-                            else
-                            {
-                                mageOther++;
-                            }
-                        }
-                        else if (deck.GetHero().Class.ToString() == "ROGUE")
-                        {
-                            if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Baku")))
-                                rogueOdd++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Rogue Quest")))
-                                rogueQuest++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Malygos")))
-                                rogueMaly++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Kingsbane")))
-                                rogueKingsbane++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Devilsaur Egg")))
-                                rogueDeathrattle++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Academic Espionage")))
-                                rogueThief++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Pogo-Hopper")))
-                                roguePogo++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Leeroy Jenkins"))) //but NOT Baku
-                                rogueAggro++;
-                            else
-                            {
-                                rogueOther++;
-                            }
-                        }
-                        else if (deck.GetHero().Class.ToString() == "DRUID")
-                        {
-                            if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Wispering Woods")))
-                                druidToken++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Malygos")))
-                                druidMalygos++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("King Togwaggle")))
-                                druidTogwaggle++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Hadronox")))
-                                druidTaunt++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Druid Quest")))
-                                druidQuest++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Mecha'thun")))
-                                druidMechathun++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Spiteful Summoner")))
-                                druidSpiteful++;
-                            else
-                            {
-                                druidOther++;
-                            }
-                        }
-                        else if (deck.GetHero().Class.ToString() == "SHAMAN")
-                        {
-                            if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Genn Greymane")))
-                                shamanEven++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Al'Akir the Windlord")) || cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("The Lich King")))
-                                shamanMidrange++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Shudderwock")))
-                                shamanShudderwok++;
-                            else
-                            {
-                                shamanOther++;
-                            }
-                        }
-                        else if (deck.GetHero().Class.ToString() == "WARRIOR")
-                        {
-                            if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Baku")))
-                            {
-                                if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Warrior Quest")))
-                                    warriorOddQuest++;
+                                if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Devilsaur Egg")))
+                                    hunterDeathrattle++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Subject 9")))
+                                    hunterSecret++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Rhok'delar")))
+                                    hunterSecret++;
                                 else
-                                    warriorOdd++;
+                                {
+                                    hunterOther++;
+                                }
                             }
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Warrior Quest")))
-                                warriorQuest++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Mecha'thun")))
-                                warriorMechathun++;
-                            else
+                            else if (deck.GetHero().Class.ToString() == "WARLOCK")
                             {
-                                warriorOther++;
+                                if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Genn Greymane")))
+                                    warlockEven++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Soul Infusion")))
+                                    warlockZoo++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Carnivorous Cube")))
+                                    warlockCube++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Voidlord")))
+                                    warlockControl++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Mecha'thun")))
+                                    warlockMechathun++;
+                                else
+                                {
+                                    warlockOther++;
+                                }
                             }
+                            else if (deck.GetHero().Class.ToString() == "MAGE")
+                            {
+                                if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Aluneth")))
+                                    mageTempo++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Book of Specters")))
+                                    mageHand++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Dragoncaller Alanna")))
+                                    mageBigSpell++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Archmage Antonidas")))
+                                    mageExodia++;
+                                else
+                                {
+                                    mageOther++;
+                                }
+                            }
+                            else if (deck.GetHero().Class.ToString() == "ROGUE")
+                            {
+                                if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Baku")))
+                                    rogueOdd++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Rogue Quest")))
+                                    rogueQuest++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Malygos")))
+                                    rogueMaly++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Kingsbane")))
+                                    rogueKingsbane++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Devilsaur Egg")))
+                                    rogueDeathrattle++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Academic Espionage")))
+                                    rogueThief++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Pogo-Hopper")))
+                                    roguePogo++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Leeroy Jenkins"))) //but NOT Baku
+                                    rogueAggro++;
+                                else
+                                {
+                                    rogueOther++;
+                                }
+                            }
+                            else if (deck.GetHero().Class.ToString() == "DRUID")
+                            {
+                                if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Wispering Woods")))
+                                    druidToken++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Malygos")))
+                                    druidMalygos++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("King Togwaggle")))
+                                    druidTogwaggle++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Hadronox")))
+                                    druidTaunt++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Druid Quest")))
+                                    druidQuest++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Mecha'thun")))
+                                    druidMechathun++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Spiteful Summoner")))
+                                    druidSpiteful++;
+                                else
+                                {
+                                    druidOther++;
+                                }
+                            }
+                            else if (deck.GetHero().Class.ToString() == "SHAMAN")
+                            {
+                                if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Genn Greymane")))
+                                    shamanEven++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Al'Akir the Windlord")) || cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("The Lich King")))
+                                    shamanMidrange++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Shudderwock")))
+                                    shamanShudderwok++;
+                                else
+                                {
+                                    shamanOther++;
+                                }
+                            }
+                            else if (deck.GetHero().Class.ToString() == "WARRIOR")
+                            {
+                                if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Baku")))
+                                {
+                                    if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Warrior Quest")))
+                                        warriorOddQuest++;
+                                    else
+                                        warriorOdd++;
+                                }
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Warrior Quest")))
+                                    warriorQuest++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Mecha'thun")))
+                                    warriorMechathun++;
+                                else
+                                {
+                                    warriorOther++;
+                                }
 
-                        }
-                        else if (deck.GetHero().Class.ToString() == "PRIEST")
-                        {
-                            if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Zerek's Cloning Gallery")))
-                                priestRez++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Alexstraza")))
-                                priestControl++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Mecha'thun")))
+                            }
+                            else if (deck.GetHero().Class.ToString() == "PRIEST")
                             {
-                                if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Priest Quest")))
-                                    priestMechathunQuest++;
+                                if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Zerek's Cloning Gallery")))
+                                    priestRez++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Alexstraza")))
+                                    priestControl++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Mecha'thun")))
+                                {
+                                    if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Priest Quest")))
+                                        priestMechathunQuest++;
+                                    else
+                                        priestMechathun++;
+                                }
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Divine Spirit")))
+                                    priestDivineSpirit++;
                                 else
-                                    priestMechathun++;
+                                {
+                                    priestOther++;
+                                }
                             }
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Divine Spirit")))
-                                priestDivineSpirit++;
-                            else
+                            else if (deck.GetHero().Class.ToString() == "PALADIN")
                             {
-                                priestOther++;
+                                if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Baku")))
+                                    paladinOdd++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Zola")))
+                                    paladinOTK++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Genn Greymane")))
+                                    paladinEven++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Kangor's Army")))
+                                    paladinMech++;
+                                else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Murloc Warleader")))
+                                    paladinMurloc++;
+                                else
+                                {
+                                    paladinOther++;
+                                }
                             }
                         }
-                        else if (deck.GetHero().Class.ToString() == "PALADIN")
+                        catch (ArgumentException)
                         {
-                            if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Baku")))
-                                paladinOdd++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Zola")))
-                                paladinOTK++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Genn Greymane")))
-                                paladinEven++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Kangor's Army")))
-                                paladinMech++;
-                            else if (cardDBFIDs.ContainsKey(dbfIDs.GetValueOrDefault("Murloc Warleader")))
-                                paladinMurloc++;
-                            else
-                            {
-                                paladinOther++;
-                            }
+                            invalidDecks++;
                         }
-                    }
-                    catch (ArgumentException)
-                    {
-                        invalidDecks++;
                     }
                 }
             }
             //nullify vars after use to save some memory
-            /*
             dbfIDs = null;
-            reader = null;
             deck = null;
             cardDBFIDs = null;
-            cardsAsCards = null;
-            */
 
             Console.WriteLine(toPrint + "\n\nMeta Analysis Done. Unrecognized Decks Above. Press ENTER to continue to overview.");
             toPrint = "";
@@ -371,14 +373,14 @@ namespace TespaMeta
                 "\nRez Priests: \t\t" + priestRez +
                 "\nDS Priests: \t\t" + priestDivineSpirit +
                 "\nMecha'thun Priests: \t" + priestMechathun +
-                "\nMecha'thun Quest Priests: \t" + priestMechathunQuest +
+                "\nMecha Quest Priests: \t" + priestMechathunQuest +
                 "\nOther Priests: \t" + priestOther + "\n";
             //Shaman Data
             toPrint += "\n\nShaman Archetypes:" +
                 "\nEven Shamans: \t\t" + shamanEven +
                 "\nMidrange Shamans: \t" + shamanMidrange +
-                "\nShudderwok Shaman \t\t" + shamanShudderwok +
-                "\nOther Shamans" + shamanOther + "\n";
+                "\nShudderwok Shamans: \t" + shamanShudderwok +
+                "\nOther Shamans: \t\t" + shamanOther + "\n";
             toPrint += "\nHunter Archetypes: " +
                 "\nDeathrattle Hunters: \t" + hunterDeathrattle +
                 "\nSecret Hunters: \t\t" + hunterSecret +
@@ -391,20 +393,87 @@ namespace TespaMeta
 
         private static void PreviewOpponent()
         {
-            throw new NotImplementedException();
+            Console.Write("Enter the team name of your opponent: ");
+            string teamName = Console.ReadLine();
+            teamName = teamName.Trim();
+            Console.WriteLine("Entered name: " + teamName);
+
+            Console.Write("Enter the name of your opponents college: ");
+            string collegeName = Console.ReadLine();
+            collegeName = collegeName.Trim();
+            Console.WriteLine("Entered College name: " + collegeName);
+
+            string[] deckCodes = new string[4 * NUM_SHEETS];
+            int deckNum = 0;
+            for (int i = 1; i <= NUM_SHEETS; i++)
+            {
+                GoogleSheetReader nameReader = new GoogleSheetReader("Sheet" + i + "!A1:A");
+                int column = 0;
+                foreach (string team in nameReader)
+                {
+                    column++;
+                    if (team == teamName)
+                    {
+                        //the following forEach loop should only execute once since we only request one cell from Google Sheets.
+                        GoogleSheetReader possibleMatch = new GoogleSheetReader("Sheet" + i + "!B" + column + ":B" + column);
+                        foreach (string college in possibleMatch)
+                        {
+                            if (college == collegeName)
+                            {
+                                GoogleSheetReader opponentDecksForWeekI = new GoogleSheetReader("Sheet" + i + "!C" + column + ":F" + column);
+                                foreach(string deckCode in opponentDecksForWeekI)
+                                {
+                                    deckCodes[deckNum++] = deckCode;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            HearthDb.Deckstrings.Deck deck;
+            int index = -1;
+            string toPrint = "";
+            foreach(string code in deckCodes)
+            {
+                if (++index % 4 == 0)
+                {
+                    toPrint += "\n----Week Number: " + index / 4 + " done. press Enter to continue with next week.";
+                    Console.WriteLine(toPrint);
+                    toPrint = "";
+                    Console.ReadLine();
+                }
+                try
+                {
+                    deck = HearthDb.Deckstrings.DeckSerializer.Deserialize(code);
+                    toPrint += HearthDb.Deckstrings.DeckSerializer.Serialize(deck, true) + "\n";
+                }
+                catch (ArgumentException)
+                {
+                    toPrint += "\n---------------------\n" +
+                        "Deserializer couldn't read: " + code + 
+                        "\n---------------------\n";
+                }
+            }
+            toPrint += "All weeks done.\n";
+            Console.WriteLine(toPrint);
+            Console.ReadLine();
         }
     }
 
     /// <summary>
-    /// returns deck codes from a Google Sheet (one cell at a time;
-    /// we're just assuming everything is a deck code without checking because I have exclusive control of the sheet.)
+    /// enumerates through individual cells of a given range of a Google Sheet
     /// </summary>
-    class DeckstringReader : IEnumerable
+    internal class GoogleSheetReader : IEnumerable
     {
+        public GoogleSheetReader(string cellRange)
+        {
+            this.cellRange = cellRange;
+        }
+
+        private readonly string cellRange;
         private static readonly string[] Scopes = { SheetsService.Scope.SpreadsheetsReadonly };
         private static readonly string ApplicationName = "TESPA HS Meta";
         UserCredential credential;
-        private readonly int NUM_SHEETS = 3; //number of sheets in the target document (number of weeks of the tournament)
 
         public IEnumerator GetEnumerator()
         {
@@ -419,7 +488,7 @@ namespace TespaMeta
                     "user",
                     CancellationToken.None,
                     new FileDataStore(credPath, true)).Result;
-                Console.WriteLine("Credential file saved to: " + credPath);
+                //Console.WriteLine("Credential file saved to: " + credPath);
             }
 
             // Create Google Sheets API service.
@@ -432,29 +501,25 @@ namespace TespaMeta
             // Define request parameters.
             string sheetID = "1-0fhWItkpb_bG5y0ZHnao-EuFYa7tbFqKM6MOts1IT8";
 
-            for (int sheet = 1; sheet <= NUM_SHEETS; sheet++)
-            {
-                //query Google Sheets for the deckstrings
-                string range = "Sheet" + sheet + "!C:F";
-                SpreadsheetsResource.ValuesResource.GetRequest request =
-                        service.Spreadsheets.Values.Get(sheetID, range);
-                ValueRange response = request.Execute();
-                IList<IList<Object>> deckStrings = response.Values;
+            //query Google Sheets for the deckstrings
+            SpreadsheetsResource.ValuesResource.GetRequest request =
+                    service.Spreadsheets.Values.Get(sheetID, cellRange);
+            ValueRange response = request.Execute();
+            IList<IList<Object>> deckStrings = response.Values;
 
-                if (deckStrings != null && deckStrings.Count > 0)
+            if (deckStrings != null && deckStrings.Count > 0)
+            {
+                foreach (var row in deckStrings)
                 {
-                    foreach (var row in deckStrings)
+                    foreach (var cell in row)
                     {
-                        foreach (var cell in row)
-                        {
-                            yield return cell;
-                        }
+                        yield return cell;
                     }
                 }
-                else
-                {
-                    Console.WriteLine("No data found.");
-                }
+            }
+            else
+            {
+                Console.WriteLine("No data found.");
             }
 
             //nullify some vars to maybe save memory while reading unrecognized deck codes
