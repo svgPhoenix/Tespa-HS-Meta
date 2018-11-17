@@ -1,10 +1,13 @@
-﻿using Google.Apis.Services;
+﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
+using Google.Apis.Util.Store;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.IO;
+using System.Threading;
 
 namespace TespaMeta
 {
@@ -18,11 +21,14 @@ namespace TespaMeta
             PrintOptions();
         }
 
+        /// <summary>
+        /// Print a basic menu and take different actions depending on input
+        /// </summary>
         static void PrintOptions()
         {
             Console.Out.WriteLine(
                             "Type the number that corresponds with the menu item:\n" +
-                            "1: Deserialize a single code\n" +
+                            "1: Deserialize some deck codes\n" +
                             "2: Analyze the meta of the entire tournament\n" +
                             "3: Analyze a specific opponent's lineup over all previous weeks");
             char input = Convert.ToChar(Console.Read());
@@ -30,7 +36,8 @@ namespace TespaMeta
             switch (input)
             {
                 case '1':
-                    DeserializeSingleDeck();
+                    //loop until the user doesn't want to check any more decks
+                    while(DeserializeSingleDeck());
                     break;
                 case '2':
                     SummarizeMeta();
@@ -46,7 +53,7 @@ namespace TespaMeta
             }
         }
 
-        private static void DeserializeSingleDeck()
+        private static bool DeserializeSingleDeck()
         {
             HearthDb.Deckstrings.Deck deck;
             Dictionary<HearthDb.Card, int> cards;
@@ -64,6 +71,29 @@ namespace TespaMeta
             }
             Console.WriteLine(toPrint);
             Console.ReadLine();
+
+            //maybe the user wanted to check more decks
+            string doContinue = "";
+            while (doContinue != null)
+            {
+                Console.WriteLine("Would you like to analyze another deck? (Y/N)\t\t");
+                doContinue = Console.ReadLine();
+                switch (doContinue.ToLower())
+                {
+                    case "Y":
+                    case "y":
+                        return true;
+                    case "F":
+                    case "f":
+                        return false;
+                    default:
+                        Console.WriteLine("Please input either 'y' or 'f'");
+                        doContinue = null;
+                        break;
+                }
+            }
+            //NoT aLl CoDe PaThS rEtuRn A vAlUe
+            return false;
         }
 
         private static void SummarizeMeta()
@@ -469,12 +499,12 @@ namespace TespaMeta
         private readonly string cellRange;
         private static readonly string[] Scopes = { SheetsService.Scope.SpreadsheetsReadonly };
         private static readonly string ApplicationName = "TESPA HS Meta";
-        //UserCredential credential; {for credentials.json file}
+        UserCredential credential;
         private static readonly string apiKey = "AIzaSyDZJ-wj4a5f2bK3kSKLaPe8ceAxeCkcldw";
 
         public IEnumerator GetEnumerator()
         {
-            /*following code used for a credentials.json file
+            
             using (var stream =
                 new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
             {
@@ -486,13 +516,12 @@ namespace TespaMeta
                     CancellationToken.None,
                     new FileDataStore(credPath, true)).Result;
                 //Console.WriteLine("Credential file saved to: " + credPath);
-            }*/
+            }
 
             // Create Google Sheets API service.
             var service = new SheetsService(new BaseClientService.Initializer()
             {
-                //following line used if authorizing with credentials.json file
-                //HttpClientInitializer = credential,
+                HttpClientInitializer = credential,
                 ApplicationName = ApplicationName,
             });
 
@@ -522,7 +551,7 @@ namespace TespaMeta
 
             //nullify some vars to maybe save memory while reading unrecognized deck codes
             service = null;
-            //credential = null;
+            credential = null;
         }
     }
 
