@@ -20,6 +20,7 @@ Put them in the same parent directory. Your directory should look like this: \
 
 
 #### Step 2: Running the app for the first time
+**Note:** you may have to run from within Visual Studio once before the self-contained exe works. That should get you logged in to Google.\
 Run "TESPA HS META.exe" in /TESPA HS META/bin/publish/ \
 You should get an OAuth prompt from Google. Accept it. I only read from [this spreadsheet](https://docs.google.com/spreadsheets/d/e/2PACX-1vSFlA6LIYylbC7t2l9u1FWMfFU950V-henjF-jgEyD75lV4kkSBcymriRgW4_PtrkhmCSmnKcEX-KxU/pubhtml) which is a manual copy of [TESPA's public spreadsheet](https://docs.google.com/spreadsheets/d/e/2PACX-1vRXjPL95ONrvuvlfH1nfDeMMr6UkfxeoOCGcJ-w_AaSgV8-pQpzw90dZLGMYLV03wf8hGQqoU8St7WJ/pubhtml)
 
