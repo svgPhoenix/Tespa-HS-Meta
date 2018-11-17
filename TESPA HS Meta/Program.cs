@@ -1,13 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Collections;
-using Google.Apis.Auth.OAuth2;
+﻿using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using Google.Apis.Services;
-using Google.Apis.Util.Store;
-using System.Threading;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 
 namespace TespaMeta
@@ -421,7 +417,7 @@ namespace TespaMeta
                             if (college == collegeName)
                             {
                                 GoogleSheetReader opponentDecksForWeekI = new GoogleSheetReader("Sheet" + i + "!C" + column + ":F" + column);
-                                foreach(string deckCode in opponentDecksForWeekI)
+                                foreach (string deckCode in opponentDecksForWeekI)
                                 {
                                     deckCodes[deckNum++] = deckCode;
                                 }
@@ -433,7 +429,7 @@ namespace TespaMeta
             HearthDb.Deckstrings.Deck deck;
             int index = -1;
             string toPrint = "";
-            foreach(string code in deckCodes)
+            foreach (string code in deckCodes)
             {
                 if (++index % 4 == 0)
                 {
@@ -450,7 +446,7 @@ namespace TespaMeta
                 catch (ArgumentException)
                 {
                     toPrint += "\n---------------------\n" +
-                        "Deserializer couldn't read: " + code + 
+                        "Deserializer couldn't read: " + code +
                         "\n---------------------\n";
                 }
             }
