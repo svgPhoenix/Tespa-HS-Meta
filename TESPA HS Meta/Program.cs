@@ -13,7 +13,7 @@ namespace TespaMeta
 {
     class Analyzer
     {
-        static readonly int NUM_SHEETS = 4;
+        static readonly int NUM_SHEETS = 7;
 
         static void Main(string[] args)
         {
