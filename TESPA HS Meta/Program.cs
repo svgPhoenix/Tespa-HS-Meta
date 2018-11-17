@@ -37,7 +37,7 @@ namespace TespaMeta
             {
                 case '1':
                     //loop until the user doesn't want to check any more decks
-                    while(DeserializeSingleDeck());
+                    while (DeserializeSingleDeck()) ;
                     break;
                 case '2':
                     SummarizeMeta();
@@ -53,18 +53,26 @@ namespace TespaMeta
             }
         }
 
+        /// <summary>
+        /// This was built to help me find the DbfId's of individual cards to help with "archetype detection"
+        /// </summary>
+        /// <returns>whether the user wants to deserialize another deck (calling function loops while(DeserializeSingleDeck);)</returns>
         private static bool DeserializeSingleDeck()
         {
             HearthDb.Deckstrings.Deck deck;
             Dictionary<HearthDb.Card, int> cards;
+            string deckstring;
+            string toPrint;
 
             Console.WriteLine("Paste a deckstring and press Enter.");
-            string deckstring = Console.ReadLine();
-            //deserialize the deck
+            deckstring = Console.ReadLine();
+            //deserialize the deck and store it in 'deck' and 'cards' representations for later manipulation
             deck = HearthDb.Deckstrings.DeckSerializer.Deserialize(deckstring);
             cards = deck.GetCards();
-            string toPrint = "#Deck Format: " + deck.Format;
+            //some basic header stuff for the output
+            toPrint = "#Deck Format: " + deck.Format;
             toPrint += "\n#Format Year: " + deck.Format;
+            //add each card and its ID to the print queue
             foreach (HearthDb.Card card in cards.Keys)
             {
                 toPrint += "\n" + card.Name + ": " + card.DbfId;
@@ -138,6 +146,7 @@ namespace TespaMeta
                 { "Subject 9", 49447}
             };
 
+            //TODO decksScanned is currently assigned but unused. this is for implementing percentages rather than raw numbers when I feel like it
             int decksScanned = 0, invalidDecks = 0,
                 //counter vars for all the different deck archetypes tracked
                 warlockZoo = 0, warlockEven = 0, warlockControl = 0, warlockCube = 0, warlockMechathun = 0, warlockOther = 0,
@@ -153,16 +162,25 @@ namespace TespaMeta
             HearthDb.Deckstrings.Deck deck;
             Dictionary<int, int> cardDBFIDs;
             string toPrint = "";
+
+            //loop through each sheet of my google doc (week of the tournament)
             for (int i = 1; i <= NUM_SHEETS; i++)
             {
                 GoogleSheetReader reader = new GoogleSheetReader("Sheet" + i + "!C:F");
                 foreach (string deckCode in reader)
                 {
+                    //ignore empty cells from no-show / disqualified teams
                     if (deckCode.Length > 1)
                     {
                         decksScanned++;
                         try
                         {
+                            /*
+                             * I highly advise minimizing all these if/else statements. 
+                             * I literally check for one card and then assume that the deck is one of a few archetypes
+                             * It is ugly and I hate it and you should too but I don't have access to HearthSim's archetype analysis
+                             * If you have a better solution, please fork and implement ;)
+                             */
                             deck = HearthDb.Deckstrings.DeckSerializer.Deserialize(deckCode);
                             cardDBFIDs = deck.CardDbfIds;
                             if (deck.GetHero().Class.ToString() == "HUNTER")
@@ -324,6 +342,7 @@ namespace TespaMeta
                                 }
                             }
                         }
+                        //I don't know why some decks cause errors. Bug in HearthDB??
                         catch (ArgumentException)
                         {
                             invalidDecks++;
@@ -331,11 +350,12 @@ namespace TespaMeta
                     }
                 }
             }
-            //nullify vars after use to save some memory
+            //nullify vars after use to save some memory(?)
             dbfIDs = null;
             deck = null;
             cardDBFIDs = null;
 
+            //I wish I could collapse the following massive print
             Console.WriteLine(toPrint + "\n\nMeta Analysis Done. Unrecognized Decks Above. Press ENTER to continue to overview.");
             toPrint = "";
             Console.ReadLine();
@@ -417,8 +437,15 @@ namespace TespaMeta
             Console.ReadLine();
         }
 
+        /// <summary>
+        /// Take a team name and college name from the user and find all decks brought by any matching teams in the database
+        /// </summary>
         private static void PreviewOpponent()
         {
+            /* We need team name & college in case one of the two isn't unique. 
+             * Could also use the team ID field from TESPA but I didn't import those to my sheet when I started,
+             *     and haven't felt like adding them.
+             */
             Console.Write("Enter the team name of your opponent: ");
             string teamName = Console.ReadLine();
             teamName = teamName.Trim();
@@ -429,24 +456,29 @@ namespace TespaMeta
             collegeName = collegeName.Trim();
             Console.WriteLine("Entered College name: " + collegeName);
 
+            //save time by searching for the opponent and saving their deck codes first
+            //then deserializing the decks later
             string[] deckCodes = new string[4 * NUM_SHEETS];
             int deckNum = 0;
+            //search for the opponent and then add all their decks to the array
             for (int i = 1; i <= NUM_SHEETS; i++)
             {
+                //loop through each cell in the column of team names
                 GoogleSheetReader nameReader = new GoogleSheetReader("Sheet" + i + "!A1:A");
-                int column = 0;
+                int row = 0;
                 foreach (string team in nameReader)
                 {
-                    column++;
+                    row++;
                     if (team == teamName)
                     {
-                        //the following forEach loop should only execute once since we only request one cell from Google Sheets.
-                        GoogleSheetReader possibleMatch = new GoogleSheetReader("Sheet" + i + "!B" + column + ":B" + column);
+                        //check that the team of matching name is the team from the correct college
+                        //'foreach' should only execute once since we only ask the Sheets API for a single cell
+                        GoogleSheetReader possibleMatch = new GoogleSheetReader("Sheet" + i + "!B" + row + ":B" + row);
                         foreach (string college in possibleMatch)
                         {
                             if (college == collegeName)
                             {
-                                GoogleSheetReader opponentDecksForWeekI = new GoogleSheetReader("Sheet" + i + "!C" + column + ":F" + column);
+                                GoogleSheetReader opponentDecksForWeekI = new GoogleSheetReader("Sheet" + i + "!C" + row + ":F" + row);
                                 foreach (string deckCode in opponentDecksForWeekI)
                                 {
                                     deckCodes[deckNum++] = deckCode;
@@ -456,11 +488,14 @@ namespace TespaMeta
                     }
                 }
             }
+
+            //deserialize all the decks we just found
             HearthDb.Deckstrings.Deck deck;
-            int index = -1;
-            string toPrint = "";
+            int index = -1; //this is for delimiting between weeks so that we don't dump 28 decks on our user at once
+            string toPrint = ""; //this is faster than lots of Console.WriteLine() calls
             foreach (string code in deckCodes)
             {
+                //teams bring 4 decks per week. delimiting the output by week keeps the user sane.
                 if (++index % 4 == 0)
                 {
                     toPrint += "\n----Week Number: " + index / 4 + " done. press Enter to continue with next week.";
@@ -473,6 +508,7 @@ namespace TespaMeta
                     deck = HearthDb.Deckstrings.DeckSerializer.Deserialize(code);
                     toPrint += HearthDb.Deckstrings.DeckSerializer.Serialize(deck, true) + "\n";
                 }
+                //return the raw code in case we can't read it. this helps the user take it elsewhere for a more reliable deserialize without finding it manually
                 catch (ArgumentException)
                 {
                     toPrint += "\n---------------------\n" +
@@ -481,13 +517,15 @@ namespace TespaMeta
                 }
             }
             toPrint += "All weeks done.\n";
-            Console.WriteLine(toPrint);
+            Console.WriteLine(toPrint); //I think this might be unnecessary based off memory but I don't feel like testing that theory rn
             Console.ReadLine();
         }
     }
 
     /// <summary>
     /// enumerates through individual cells of a given range of a Google Sheet
+    /// This code is very close to the example boilerplate from Google's own API docs. 
+    /// I only modified it to take cell range as an argument. all else is theirs.
     /// </summary>
     internal class GoogleSheetReader : IEnumerable
     {
@@ -503,7 +541,7 @@ namespace TespaMeta
 
         public IEnumerator GetEnumerator()
         {
-            
+
             using (var stream =
                 new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
             {
