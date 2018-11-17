@@ -473,11 +473,12 @@ namespace TespaMeta
         private readonly string cellRange;
         private static readonly string[] Scopes = { SheetsService.Scope.SpreadsheetsReadonly };
         private static readonly string ApplicationName = "TESPA HS Meta";
-        UserCredential credential;
+        //UserCredential credential; {for credentials.json file}
+        private static readonly string apiKey = "AIzaSyDZJ-wj4a5f2bK3kSKLaPe8ceAxeCkcldw";
 
         public IEnumerator GetEnumerator()
         {
-
+            /*following code used for a credentials.json file
             using (var stream =
                 new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
             {
@@ -489,12 +490,13 @@ namespace TespaMeta
                     CancellationToken.None,
                     new FileDataStore(credPath, true)).Result;
                 //Console.WriteLine("Credential file saved to: " + credPath);
-            }
+            }*/
 
             // Create Google Sheets API service.
             var service = new SheetsService(new BaseClientService.Initializer()
             {
-                HttpClientInitializer = credential,
+                //following line used if authorizing with credentials.json file
+                //HttpClientInitializer = credential,
                 ApplicationName = ApplicationName,
             });
 
@@ -524,7 +526,7 @@ namespace TespaMeta
 
             //nullify some vars to maybe save memory while reading unrecognized deck codes
             service = null;
-            credential = null;
+            //credential = null;
         }
     }
 
